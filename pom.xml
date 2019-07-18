@@ -13,6 +13,7 @@
         <module>code-generation-template</module>
         <module>code-generation</module>
         <module>common</module>
+        <module>code-generation-ui</module>
     </modules>
 
     <packaging>pom</packaging>
