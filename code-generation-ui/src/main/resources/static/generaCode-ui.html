@@ -11,6 +11,7 @@
 </head>
 <body>
 <div id="app">
+    <!-- 类基本信息 -->
     <el-form :inline="true" :model="form" class="demo-form-inline" label-width="150px">
         <el-form-item label="类描述">
             <el-input v-model="form.classDescribe" placeholder="类描述"></el-input>
@@ -47,8 +48,9 @@
             </template>
         </el-form-item>
     </el-form>
+    <!-- 类基本信息 edn -->
 
-    <!-- 添加字段 -->
+    <!-- 操作按钮 -->
     <el-form :inline="true" :model="form" class="demo-form-inline" label-width="0px">
         <el-form-item>
             <el-button type="primary" @click="onAdd">添加字段</el-button>
@@ -70,9 +72,11 @@
             <el-button type="primary" @click="getCode('CONTROLLER')">生成Controller</el-button>
         </el-form-item>
     </el-form>
+    <!-- 操作按钮 end -->
 
 
 
+    <!-- 类字段维护 -->
     <el-table
             :data="form.fields"
             style="width: 100%">
@@ -122,7 +126,9 @@
             </template>
         </el-table-column>
     </el-table>
+    <!-- 类字段维护 end-->
 
+    <!-- 代码生成结果 -->
     <el-dialog title="生成的代码" :visible.sync="dialogTableVisible">
         <!-- 生成的代码 -->
         <el-form ref="form" :model="form" label-width="0px">
@@ -131,6 +137,7 @@
             </el-form-item>
         </el-form>
     </el-dialog>
+    <!-- 代码生成结果 end -->
 
 </div>
 </body>
@@ -164,7 +171,11 @@
             this.init();
         },
         methods:{
+            /**
+             * 初始化数据
+             */
             init(){
+                //初始化数据
                 var _this = this;
                 axios.get(
                     "http://localhost:30007/codeGeneration/getAllDataType"
@@ -176,15 +187,26 @@
                     debugger;
                 });
             },
+            /**
+             * 添加字段
+             */
             onAdd(){
+                //添加字段
                 var _this = this;
                 _this.form.fields.push({});
             },
+            /**
+             * 删除字段
+             */
             deleteField(index){
                 debugger;
                 var _this = this;
                 _this.form.fields.splice(index,1);
             },
+            /**
+             *  获取生成的代码
+             * @param code 需要生成的文件代码
+             */
             getCode(code) {
                 var _this = this;
                 axios.post(
