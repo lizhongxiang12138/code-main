@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-form :inline="true" :model="form" class="demo-form-inline" label-width="150px">
+        <el-form-item label="类描述">
+            <el-input v-model="form.classDescribe" placeholder="类描述"></el-input>
+        </el-form-item>
+        <el-form-item label="类名">
+            <el-input v-model="form.className" placeholder="类名"></el-input>
+        </el-form-item>
+        <el-form-item label="bean名称">
+            <el-input v-model="form.springBeanName" placeholder="bean名称"></el-input>
+        </el-form-item>
+        <el-form-item label="表名称">
+            <el-input v-model="form.tableName" placeholder="表名称"></el-input>
+        </el-form-item>
+        <el-form-item label="主键在表中的字段名">
+            <el-input v-model="form.idColumnName" placeholder="主键在表中的字段名"></el-input>
+        </el-form-item>
+        <el-form-item label="主键的描述">
+            <el-input v-model="form.idDescribe" placeholder="主键的描述"></el-input>
+        </el-form-item>
+        <el-form-item label="主键字段名">
+            <el-input v-model="form.idName" placeholder="主键字段名"></el-input>
+        </el-form-item>
+        <el-form-item label="主键类型">
+            <el-input v-model="form.idType" placeholder="主键类型"></el-input>
+            <template slot-scope="{row,$index}">
+                <el-select v-model="form.idType" filterable clearable placeholder="请选择">
+                    <el-option
+                            v-for="item in type"
+                            :key="item.name"
+                            :label="item.name"
+                            :value="item.name">
+                    </el-option>
+                </el-select>
+            </template>
+        </el-form-item>
+    </el-form>
+
+    <!-- 添加字段 -->
+    <el-form :inline="true" :model="form" class="demo-form-inline" label-width="0px">
+        <el-form-item>
+            <el-button type="primary" @click="onAdd">添加字段</el-button>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" @click="getCode('ENTITY')">生成实体</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="getCode('DAO')">生成DAO</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="getCode('SERVICE')">生成Service</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="getCode('SERVICE_IMPL')">生成Service实现</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="getCode('CONTROLLER')">生成Controller</el-button>
+        </el-form-item>
+    </el-form>
+
+
+
+    <el-table
+            :data="form.fields"
+            style="width: 100%">
+        <el-table-column
+                prop="describe"
+                label="字段描述"
+                width="180">
+            <template slot-scope="{row,$index}">
+                <el-input v-model='row.describe'></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column
+                prop="name"
+                label="字段名称">
+            <template slot-scope="{row,$index}">
+                <el-input v-model='row.name'></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column
+                prop="type"
+                label="字段类型">
+            <template slot-scope="{row,$index}">
+                <el-select v-model="row.type" filterable clearable placeholder="请选择">
+                    <el-option
+                            v-for="item in type"
+                            :key="item.name"
+                            :label="item.name"
+                            :value="item.name">
+                    </el-option>
+                </el-select>
+            </template>
+        </el-table-column>
+        <el-table-column
+                prop="columnName"
+                label="表的字段名称"
+                width="180">
+            <template slot-scope="{row,$index}">
+                <el-input v-model='row.columnName'></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="150">
+            <template slot-scope="scope">
+                <el-button @click="deleteField(scope.$index)" type="danger" size="small">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+
+    <el-dialog title="生成的代码" :visible.sync="dialogTableVisible">
+        <!-- 生成的代码 -->
+        <el-form ref="form" :model="form" label-width="0px">
+            <el-form-item>
+                <el-input type="textarea" :rows="30" v-model="returnData.data"></el-input>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+
+</div>
+</body>
+<!-- 引入组件库 -->
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            dialogTableVisible: false,
+            type:[],
+            form:{
+                "classDescribe": "学生表",
+                "className": "Student",
+                "idColumnName": "ID",
+                "idDescribe": "主键",
+                "idName": "id",
+                "idType": "String",
+                "springBeanName": "student",
+                "tableName": "STUDENT",
+                "fields": []
+            },
+            returnData:{
+
+            }
+        },
+        mounted(){
+            this.init();
+        },
+        methods:{
+            init(){
+                var _this = this;
+                axios.get(
+                    "http://localhost:30007/codeGeneration/getAllDataType"
+                ).then(function(rsp){
+                    debugger;
+                    _this.type = rsp.data.data;
+                    console.log(this.application);
+                }).catch(function(error){
+                    debugger;
+                });
+            },
+            onAdd(){
+                var _this = this;
+                _this.form.fields.push({});
+            },
+            deleteField(index){
+                debugger;
+                var _this = this;
+                _this.form.fields.splice(index,1);
+            },
+            getCode(code) {
+                var _this = this;
+                axios.post(
+                    "http://localhost:30007/codeGeneration/generationCode/"+code,_this.form
+                ).then(function(rsp){
+                    debugger;
+                    if(rsp){
+                        _this.returnData=rsp.data;
+                        _this.dialogTableVisible = true;
+                    }
+                }).catch(function (error) {
+
+                });
+            }
+        }
+    });
+</script>
+</html>
