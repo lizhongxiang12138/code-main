@@ -1,13 +1,13 @@
-package ${packageName};
+package com.lzx.code.codedemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ${className} {
+public class CodeDemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(${className}.class, args);
+        SpringApplication.run(CodeDemoApplication.class, args);
     }
 
 }

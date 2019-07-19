@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+
+    </style>
+</head>
+<body background="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563537751694&di=64e23c890c6de6f2666fa3f0fd724c82&imgtype=0&src=http%3A%2F%2Fwww.macplus.net%2Fmagplus%2FIMG%2Fjpg%2Fgalaxy-3.jpg"
+    style="background-repeat:no-repeat;background-size:100% 100%;background-attachment: fixed;">
+<div id="app" style="text-align: center">
+    <div style="margin-top: 25%">
+        <el-button type="primary" style="width:140px" @click="addProject()">创建项目</el-button>
+        <el-button type="primary" style="width:140px" @click="addCode()">代码生成工具</el-button>
+    </div>
+</div>
+</body>
+<!-- 引入组件库 -->
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+
+        },
+        mounted(){
+        },
+        methods:{
+            addProject(){
+                window.open("http://localhost:30008/generaProject-ui.html");
+            },
+            addCode(){
+                window.open("http://localhost:30008/generaCode-ui.html");
+            }
+        }
+    });
+</script>
+</html>

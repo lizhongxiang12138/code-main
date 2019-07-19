@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <el-form :label-position="labelPosition" label-width="80px" :model="form">
+        <el-form-item label="groupId">
+            <el-input v-model="form.groupId"></el-input>
+        </el-form-item>
+        <el-form-item label="artifactId">
+            <el-input v-model="form.artifactId"></el-input>
+        </el-form-item>
+        <el-form-item label="version">
+            <el-input v-model="form.version"></el-input>
+        </el-form-item>
+        <el-form-item label="name">
+            <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="description">
+            <el-input v-model="form.description"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="addProject()">创建项目</el-button>
+        </el-form-item>
+    </el-form>
+
+    <!-- 项目生成结果 -->
+    <el-dialog title="生成结果" :visible.sync="dialogTableVisible">
+        <!-- 生成的代码 -->
+        <el-form :model="returnData" label-width="80px">
+            <el-form-item label="项目">
+                <el-input v-model="returnData.data"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="downloadProject()">下载代码</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+    <!-- 项目生成结果 end -->
+
+</div>
+</body>
+<!-- 引入组件库 -->
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            dialogTableVisible: false,
+            labelPosition: 'right',
+            form:{
+                "version": "0.0.1-SNAPSHOT",
+                "groupId": "com.lzx"
+            },
+            returnData:{}
+        },
+        mounted(){
+        },
+        methods:{
+            addProject(){
+                var _this = this;
+                axios.post(
+                    "http://localhost:30007/projectGeneration/generationProject",_this.form
+                ).then(function(rsp){
+                    debugger;
+                    if(rsp){
+                        _this.returnData=rsp.data;
+                        _this.dialogTableVisible = true;
+                    }
+                }).catch(function (error) {
+
+                });
+            },
+            downloadProject(){
+                debugger;
+                var _this = this;
+                if(_this.returnData.data){
+                    window.open("http://localhost:30007/projectGeneration/downloadProject/"+_this.returnData.data);
+                }
+            }
+        }
+    });
+</script>
+</html>
