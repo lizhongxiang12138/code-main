@@ -34,7 +34,8 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
     public String generationProject(ProjectInfo projectInfo) throws IOException {
 
         URL resource = this.getClass().getResource("/");
-        log.info(resource.getFile());
+        String projectsRoot = resource.getFile()+"/projects/";
+        log.info(projectsRoot);
 
         String lastPackageName = projectInfo.getArtifactId().replaceAll("-","").toLowerCase();
         //启动类名称
@@ -46,17 +47,17 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
         applicationJavaName.append("Application");
 
         //1、创建  xxxApplication.java
-        generationApplicationJava(projectInfo, resource, lastPackageName, applicationJavaName);
+        generationApplicationJava(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
 
 
         //2、创建配置文件
-        generationApplicationYml(projectInfo, resource);
+        generationApplicationYml(projectInfo, projectsRoot);
 
         //3、创建主测试类
-        generationApplicationJavaTests(projectInfo, resource, lastPackageName, applicationJavaName);
+        generationApplicationJavaTests(projectInfo, projectsRoot, lastPackageName, applicationJavaName);
 
         //4、生成配置文件
-        generationGitignore(projectInfo, resource);
+        generationGitignore(projectInfo, projectsRoot);
 
         return projectInfo.getArtifactId();
 
@@ -73,13 +74,15 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
 
         //压缩成zip
         URL resource = this.getClass().getResource("/");
-        log.info(resource.getFile());
+        String projectsRoot = resource.getFile()+"/projects/";
+        log.info(projectsRoot);
         ZipOutputStream out = new ZipOutputStream(os);
-        File f = new File(resource.getFile() + projectName);
+        File f = new File(projectsRoot + projectName);
         this.zip(out,f,"");
+        out.putNextEntry(new ZipEntry("README.md"));
 
         //删除文件夹
-        this.delFolder(resource.getFile() + projectName);
+//        this.delFolder(resource.getFile() + projectName);
     }
 
     private void delFolder(String folderPath) {
@@ -151,12 +154,12 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
         }
     }
 
-    private void generationGitignore(ProjectInfo projectInfo, URL resource) throws IOException {
-        generationPom(projectInfo, resource);
+    private void generationGitignore(ProjectInfo projectInfo, String projectsRoot) throws IOException {
+        generationPom(projectInfo, projectsRoot);
 
         //5、生成git提交时忽略的文件配置规则
         File file = new File(
-                resource.getFile()
+                projectsRoot
                         + projectInfo.getArtifactId() + "/",
                 ".gitignore"
         );
@@ -183,12 +186,12 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
     /**
      * 生成配置文件
      * @param projectInfo
-     * @param resource
+     * @param projectsRoot
      * @throws IOException
      */
-    private void generationPom(ProjectInfo projectInfo, URL resource) throws IOException {
+    private void generationPom(ProjectInfo projectInfo, String projectsRoot) throws IOException {
         File pomFile = new File(
-                resource.getFile()
+                projectsRoot
                         + projectInfo.getArtifactId() + "/",
                 "pom.xml"
         );
@@ -215,12 +218,12 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
     /**
      * 主测试类生成
      * @param projectInfo
-     * @param resource
+     * @param projectsRoot
      * @param lastPackageName
      * @param applicationJavaName
      * @throws IOException
      */
-    private void generationApplicationJavaTests(ProjectInfo projectInfo, URL resource, String lastPackageName, StringBuffer applicationJavaName) throws IOException {
+    private void generationApplicationJavaTests(ProjectInfo projectInfo, String projectsRoot, String lastPackageName, StringBuffer applicationJavaName) throws IOException {
         ApplicationJavaInfo applicationJavaInfo = new ApplicationJavaInfo(
                 projectInfo.getGroupId() + "." + lastPackageName,
                 applicationJavaName.toString()
@@ -228,7 +231,7 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
 
         Template template = TemplateUtils.getConfiguration().getTemplate("ApplicationJavaTests.ftl", "UTF-8");
         String packagePath = applicationJavaInfo.getPackageName().replace(".", "/")+"/";
-        File applicationJavaFile = new File(resource.getFile()
+        File applicationJavaFile = new File(projectsRoot
                 +projectInfo.getArtifactId()+"/src/test/java/"
                 +packagePath, applicationJavaInfo.getClassName() + "Tests.java");
         if(!applicationJavaFile.exists()){
@@ -254,13 +257,13 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
     /**
      * 创建配置文件
      * @param projectInfo
-     * @param resource
+     * @param projectsRoot
      * @throws IOException
      */
-    private void generationApplicationYml(ProjectInfo projectInfo, URL resource) throws IOException {
+    private void generationApplicationYml(ProjectInfo projectInfo, String projectsRoot) throws IOException {
         Template template = TemplateUtils.getConfiguration().getTemplate("applicationYml.ftl", "UTF-8");
         File applicationYmlFile = new File(
-                resource.getFile()
+                projectsRoot
                         + projectInfo.getArtifactId() + "/src/main/resources/",
                 "application.yml"
         );
@@ -286,12 +289,12 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
     /**
      * 创建  xxxApplication.java
      * @param projectInfo
-     * @param resource
+     * @param projectsRoot
      * @param lastPackageName
      * @param applicationJavaName
      * @throws IOException
      */
-    private void generationApplicationJava(ProjectInfo projectInfo, URL resource, String lastPackageName, StringBuffer applicationJavaName) throws IOException {
+    private void generationApplicationJava(ProjectInfo projectInfo, String projectsRoot, String lastPackageName, StringBuffer applicationJavaName) throws IOException {
         ApplicationJavaInfo applicationJavaInfo = new ApplicationJavaInfo(
                 projectInfo.getGroupId() + "." + lastPackageName,
                 applicationJavaName.toString()
@@ -299,7 +302,7 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
 
         Template template = TemplateUtils.getConfiguration().getTemplate("ApplicationJava.ftl", "UTF-8");
         String packagePath = applicationJavaInfo.getPackageName().replace(".", "/")+"/";
-        File applicationJavaFile = new File(resource.getFile()
+        File applicationJavaFile = new File(projectsRoot
                 +projectInfo.getArtifactId()+"/src/main/java/"
                 +packagePath, applicationJavaInfo.getClassName() + ".java");
         if(!applicationJavaFile.exists()){

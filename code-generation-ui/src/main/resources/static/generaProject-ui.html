@@ -33,6 +33,22 @@
         </el-form-item>
     </el-form>
 
+    <!-- 项目列表 -->
+    <el-table :data="projects" style="width: 100%">
+        <el-table-column prop="projectFileName" label="项目"></el-table-column>
+        <el-table-column prop="projectFilePath" label="路径"></el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="150">
+            <template slot-scope="scope">
+                <el-button @click="deleteProject(scope.$index)" type="danger" size="small">删除</el-button>
+                <el-button @click="downloadProject(scope.row.projectFileName)" type="primary" size="small">下载</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <!-- 项目列表 end -->
+
     <!-- 项目生成结果 -->
     <el-dialog title="生成结果" :visible.sync="dialogTableVisible">
         <!-- 生成的代码 -->
@@ -41,7 +57,7 @@
                 <el-input v-model="returnData.data"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="downloadProject()">下载代码</el-button>
+                <el-button type="primary" @click="downloadProject(returnData.data)">下载代码</el-button>
             </el-form-item>
         </el-form>
     </el-dialog>
@@ -58,6 +74,7 @@
     new Vue({
         el:"#app",
         data:{
+            projects:[],
             dialogTableVisible: false,
             labelPosition: 'right',
             form:{
@@ -67,8 +84,40 @@
             returnData:{}
         },
         mounted(){
+            this.init();
         },
         methods:{
+            deleteProject(index){
+                //初始化数据
+                var _this = this;
+                var projectName = _this.projects[index].projectFileName;
+                debugger;
+                axios.delete(
+                    "http://localhost:30007/projects/deleteProjectFiles/"+projectName
+                ).then(function(rsp){
+                    debugger;
+                    _this.$message({
+                        type: 'info',
+                        message: '删除成功'
+                    });
+                    _this.init();
+                }).catch(function(error){
+                    debugger;
+                });
+            },
+            init(){
+                //初始化数据
+                var _this = this;
+                axios.get(
+                    "http://localhost:30007/projects/getAllProjectsFiles"
+                ).then(function(rsp){
+                    debugger;
+                    _this.projects = rsp.data.data;
+                    console.log(this.application);
+                }).catch(function(error){
+                    debugger;
+                });
+            },
             addProject(){
                 var _this = this;
                 axios.post(
@@ -76,6 +125,7 @@
                 ).then(function(rsp){
                     debugger;
                     if(rsp){
+                        _this.init();
                         _this.returnData=rsp.data;
                         _this.dialogTableVisible = true;
                     }
@@ -83,12 +133,10 @@
 
                 });
             },
-            downloadProject(){
+            downloadProject(projectName){
                 debugger;
                 var _this = this;
-                if(_this.returnData.data){
-                    window.open("http://localhost:30007/projectGeneration/downloadProject/"+_this.returnData.data);
-                }
+                window.open("http://localhost:30007/projectGeneration/downloadProject/"+projectName);
             }
         }
     });

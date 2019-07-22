@@ -15,6 +15,7 @@
         <module>common</module>
         <module>code-generation-ui</module>
         <module>code-demo</module>
+        <module>jpa-common</module>
     </modules>
 
     <packaging>pom</packaging>
