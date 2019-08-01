@@ -6,7 +6,7 @@
         <groupId>com.lzx.code</groupId>
         <artifactId>code-main</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
     <artifactId>code-generation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
