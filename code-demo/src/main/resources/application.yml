@@ -1,23 +1,41 @@
 #启动接口
 server:
   port: 30009
-
 spring:
-  ######################################################
-  #   数据库连接相关配置
-  ######################################################
-  datasource:
-    url: jdbc:mysql://39.100.132.241:3306/eureka_manage?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=Hongkong
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
   jpa:
-    properties:
-      hibernate:
-        hbm2ddl:
-          auto: update
-        dialect: org.hibernate.dialect.MySQL5Dialect
-    ##映射方式配置，若配置成SpringPhysicalNamingStrategy，在进行映射时,首字母小写，大写字母变为下划线加小写
+    database: mysql
+    show-sql: true
     hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#      修改不自动更新表
+      ddl-auto: none
+
+#数据源0定义，这里只是用了一个数据源，各位客官可以根据自己的需求定义多个数据源
+database0:
+  databaseName: database0
+  url: jdbc:mysql://kcsm-pre.mysql.rds.aliyuncs.com:3306/dstest?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=Hongkong
+  username: root
+  password: kcsm@111
+  driverClassName: com.mysql.jdbc.Driver
+
+
+
+
+#spring:
+#  ######################################################
+#  #   数据库连接相关配置
+#  ######################################################
+#  datasource:
+#    url: jdbc:mysql://39.100.132.241:3306/eureka_manage?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=Hongkong
+#    username: root
+#    password: 123456
+#    driver-class-name: com.mysql.jdbc.Driver
+#  jpa:
+#    properties:
+#      hibernate:
+#        hbm2ddl:
+#          auto: update
+#        dialect: org.hibernate.dialect.MySQL5Dialect
+#    ##映射方式配置，若配置成SpringPhysicalNamingStrategy，在进行映射时,首字母小写，大写字母变为下划线加小写
+#    hibernate:
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
